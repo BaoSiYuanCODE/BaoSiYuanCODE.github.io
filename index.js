@@ -12,9 +12,13 @@
             $('body').html('');
             blog();
             break;
-        case '#/code':
+        case '#/codetemplate':
             $('body').html('');
-            code();
+            codetemplate();
+            break;
+        case '#/Personalcodebase':
+            $('body').html('');
+            Personalcodebase();
             break;
         default:
             if (location.hash.search('#/blogSub/') != -1) {
@@ -277,8 +281,8 @@ function blogSub() {
     $('#menu2').attr('class', 'active item');
 }
 
-function code() {
-    document.title = '代码 - BaoSiYuanCODE';
+function codetemplate() {
+    document.title = 'C++代码模板 - BaoSiYuanCODE';
     let json = [], search = '';
     function refresh() {
         $('#code').empty();
@@ -342,4 +346,71 @@ function code() {
             )
         );
     $('#menu3').attr('class', 'active item');
+}
+function Personalcodebase() {
+    document.title = '个人代码库 - BaoSiYuanCODE';
+    let json = [], search = '';
+    function refresh() {
+        $('#Personalcodebase').empty();
+        marked.setOptions({
+            highlight: function (Personalcodebase) {
+                return hljs.highlightAuto(Personalcodebase).value;
+            }
+        });
+        for (let i in json) {
+            let content = json[i].name + '\n\n' + marked.parse(json[i].body);
+            if (content.search(search) != -1) {
+                $('#Personalcodebase')
+                    .append($('<div></div>')
+                        .attr('class', 'ui card')
+                        .append($('<div></div>')
+                            .attr('class', 'content')
+                            .append($('<div></div>')
+                                .attr('class', 'header')
+                                .text(json[i].name)
+                            )
+                        )
+                        .append($('<div></div>')
+                            .attr('class', 'content')
+                            .html(marked.parse(json[i].body))
+                        )
+                    );
+            }
+        }
+        $('pre').attr('style', 'white-space: pre-wrap!important;');
+    }
+    $('body')
+        .append(menu())
+        .append($('<div></div>')
+            .attr('class', 'ui segment')
+            .css({ 'margin-top': '5%', 'margin-left': '14%', 'margin-right': '14%' })
+            .append($('<div></div>')
+                .attr('class', 'ui cards')
+                .attr('id', 'Personalcodebase')
+                .ready(function () {
+                    $.get('https://api.github.com/repos/baosiyuancode/Bao-Siyuan-s-homepage/releases
+', function (body, status) {
+                        json = body;
+                        refresh();
+                    })
+                })
+            )
+        );
+    $('.right.menu')
+        .prepend($('<div></div>')
+            .attr('class', 'item')
+            .append($('<div></div>')
+                .attr('class', 'ui transparent icon input')
+                .append($('<input></input>')
+                    .attr('class', 'prompt')
+                    .attr('type', 'text')
+                    .attr('placeholder', '搜索...')
+                    .bind('input', function () {
+                        search = $(this).val();
+                        refresh();
+                    })
+                )
+            )
+        );
+    $('#menu4').attr('class', 'active item');
 }
