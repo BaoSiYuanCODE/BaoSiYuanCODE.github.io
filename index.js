@@ -52,9 +52,17 @@ function menu() {
             .attr('class', 'item')
             .attr('id', 'menu3')
             .click(function () {
-                location.hash = '#/code';
+                location.hash = '#/codetemplate';
             })
-            .text('代码')
+            .text('C++代码模板')
+        )
+        .append($('<a></a>')
+            .attr('class', 'item')
+            .attr('id', 'menu4')
+            .click(function () {
+                location.hash = '#/Personalcodebase';
+            })
+            .text('个人代码库')
         )
         .append($('<div></div>')
             .attr('class', 'ui simple dropdown item')
