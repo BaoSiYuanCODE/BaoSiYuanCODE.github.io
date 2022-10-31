@@ -388,8 +388,7 @@ function Personalcodebase() {
                 .attr('class', 'ui cards')
                 .attr('id', 'Personalcodebase')
                 .ready(function () {
-                    $.get('https://api.github.com/repos/baosiyuancode/Bao-Siyuan-s-homepage/releases
-', function (body, status) {
+                    $.get('https://api.github.com/repos/baosiyuancode/Bao-Siyuan-s-homepage/releases', function (body, status) {
                         json = body;
                         refresh();
                     })
