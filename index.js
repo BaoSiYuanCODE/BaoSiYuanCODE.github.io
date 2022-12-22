@@ -94,7 +94,7 @@ function menu() {
                     .attr('class', 'item')
                     .text('图床')
                     .click(function () {
-                        window.open('https://postimages.org/');
+                        window.open('https://www.helloimg.com/');
                     })
                 )
             )
@@ -349,7 +349,30 @@ function codetemplate() {
 }
 function Personalcodebase() {
     document.title = '个人代码库 - BaoSiYuanCODE';
-    let json = [], search = '';
+    let json = [], json2 = [], search = '';
+    function decode(str, key) {
+        var length = key.length;
+        var bit, bit1, bit2, bit3, bit4, j = 0, s;
+        var s = new Array(Math.floor(str.length / 4));
+        var result = [];
+        bit = s.length;
+        for (var i = 0; i < bit; i++) {
+            bit1 = key.indexOf(str.charAt(j));
+            j++;
+            bit2 = key.indexOf(str.charAt(j));
+            j++;
+            bit3 = key.indexOf(str.charAt(j));
+            j++;
+            bit4 = key.indexOf(str.charAt(j));
+            j++;
+            //bit1,bit2,bit3,bit4 每四个秘钥字符的位置 对应的是str的一个字符         
+            s[i] = bit1 * length * length * length + bit2 * length * length + bit3 * length + bit4;
+            //bit1*length*length*length+bit2*length*length+bit3*length+bit4还原str每个字符的Unicode 编码
+            result.push(String.fromCharCode(s[i])); //将Unicode 编码还原数据
+        }
+        //还原字符
+        return result.join("");
+    }
     function refresh() {
         $('#Personalcodebase').empty();
         marked.setOptions({
@@ -358,8 +381,8 @@ function Personalcodebase() {
             }
         });
         for (let i in json) {
-            let content = json[i].name + '\n\n' + marked.parse(json[i].body);
-            if (content.search(search) != -1) {
+            let k = json[i];
+            if (k.name.search(search) != -1) {
                 $('#Personalcodebase')
                     .append($('<div></div>')
                         .attr('class', 'ui card')
@@ -367,12 +390,58 @@ function Personalcodebase() {
                             .attr('class', 'content')
                             .append($('<div></div>')
                                 .attr('class', 'header')
-                                .text(json[i].name)
+                                .text(k.name)
                             )
                         )
                         .append($('<div></div>')
                             .attr('class', 'content')
-                            .html(marked.parse(json[i].body))
+                            .append($('<button></button>')
+                                .attr('class', 'ui button')
+                                .attr('url', k.git_url)
+                                .text('解密')
+                                .click(function () {
+                                    let thi = $(this);
+                                    let url = $(this).attr('url');
+                                    let password = prompt('输入密码：'); //输入密码
+                                    $.get(url, function (body) {
+                                        body = decode(atob(body.content), password); //根据密码解密
+                                        thi.parent().empty().html(marked.parse('```\n' + body + '\n```'));
+                                    });
+                                })
+                            )
+                        )
+                    );
+            }
+        }
+        for (let i in json2) {
+            let k = json2[i];
+            if (k.name.search(search) != -1) {
+                $('#Personalcodebase')
+                    .append($('<div></div>')
+                        .attr('class', 'ui card')
+                        .append($('<div></div>')
+                            .attr('class', 'content')
+                            .append($('<div></div>')
+                                .attr('class', 'header')
+                                .text(k.name)
+                            )
+                        )
+                        .append($('<div></div>')
+                            .attr('class', 'content')
+                            .append($('<button></button>')
+                                .attr('class', 'ui button')
+                                .attr('url', k.git_url)
+                                .text('解密')
+                                .click(function () {
+                                    let thi = $(this);
+                                    let url = $(this).attr('url');
+                                    let password = prompt('输入密码：'); //输入密码
+                                    $.get(url, function (body) {
+                                        body = decode(atob(body.content), password); //根据密码解密
+                                        thi.parent().empty().html(marked.parse('```\n' + body + '\n```'));
+                                    });
+                                })
+                            )
                         )
                     );
             }
@@ -388,13 +457,16 @@ function Personalcodebase() {
                 .attr('class', 'ui cards')
                 .attr('id', 'Personalcodebase')
                 .ready(function () {
-                    $.get('https://api.github.com/repos/baosiyuancode/Bao-Siyuan-s-homepage/releases', function (body, status) {
+                    $.get('https://api.github.com/repos/baosiyuancode/Bao-Siyuan-s-homepage/contents/', function (body, status) {
                         json = body;
                         refresh();
                     })
+                    $.get('https://api.github.com/repos/baosiyuancode/Bao-Siyuan-s-homepage2/contents/', function (body, status) {
+                        json2 = body;
+                    })
                 })
             )
-        );
+        )
     $('.right.menu')
         .prepend($('<div></div>')
             .attr('class', 'item')
